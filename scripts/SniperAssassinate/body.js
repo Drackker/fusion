@@ -17,12 +17,12 @@ function SniperAssassinateFunc() {
 	}).filter(function(ent) {
 		return Entities.IsAlive(ent) && !(Entities.IsBuilding(ent) || Entities.IsInvulnerable(ent)) && Entities.IsEnemy(ent) && Entities.GetRangeToUnit(MyEnt, ent) <= UltiRange && !Entities.IsMagicImmune(ent)
 	}).sort(function(ent1, ent2) {
-		var rng1 = Entities.GetHealth(ent1)
-		var rng2 = Entities.GetHealth(ent2)
+		var h1 = Entities.GetHealth(ent1)
+		var h2 = Entities.GetHealth(ent2)
 		
-		if(rng1 === rng2)
+		if(h1 === h2)
 			return 0
-		if(rng1 > rng2)
+		if(h1 > h2)
 			return 1 
 		else
 			return -1
@@ -32,7 +32,7 @@ function SniperAssassinateFunc() {
 		if(Fusion.HasLinkenAtTime(ent, 2))
 			return false
 		
-		if(Game.GetNeededMagicDmg(MyEnt, ent, Entities.GetHealth(ent)) <= UltiDmg) {
+		if(Fusion.GetNeededMagicDmg(MyEnt, ent, Entities.GetHealth(ent)) <= UltiDmg) {
 			GameUI.SelectUnit(MyEnt, false)
 			if(Glimmer !== undefined)
 				Game.CastTarget(MyEnt, Glimmer, MyEnt, false)

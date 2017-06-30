@@ -9,7 +9,7 @@ Fusion = {
 	debugLoad: true,
 	debugScripts: true,
 	debugAnimations: true,
-	FusionServer: "http://m00fm0nkey.servegame.com:4297",
+	FusionServer: "http://localhost:4297",
 	SteamID: 0
 }
 

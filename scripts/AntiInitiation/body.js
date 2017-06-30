@@ -49,7 +49,8 @@ var OtherAbils = [
 	["dark_seer_wall_of_replica", false],
 	["queenofpain_sonic_wave", false],
 	["juggernaut_omni_slash", false],
-	["slark_pounce", false]
+	["slark_pounce", false],
+	["axe_culling_blade", false]
 ]
 
 var Abils = [
@@ -103,9 +104,10 @@ function AntiInitiationF() {
 					return false
 				
 				var abilL = Game.GetAbilityByName(MyEnt, abilName)
+				if(abilL === undefined)
+					return false
 				var abilrange = Abilities.GetCastRangeFix(abilL)
 				if (
-					abilL === undefined ||
 					Abilities.GetCooldownTimeRemaining(abilL) !== 0 ||
 					(
 						Entities.GetRangeToUnit(MyEnt, ent) > abilrange &&

@@ -1,11 +1,15 @@
-﻿var MeepoName = 'npc_dota_hero_meepo'
-
-function PoofAllMeeposToMeepo(playerID, To, WithCheck, Queue) {
-	var HEnts = Entities.GetAllEntitiesByClassname(MeepoName).map(function(ent) {
+﻿Fusion.MeepoClassname = 'npc_dota_hero_meepo'
+function GetMeepos() {
+	var playerID = Game.GetLocalPlayerID()
+	return Entities.GetAllEntitiesByClassname(Fusion.MeepoClassname).map(function(ent) {
 		return parseInt(ent)
 	}).filter(function(ent) {
 		return Entities.IsAlive(ent) && !Entities.IsBuilding(ent) && !Entities.IsEnemy(ent) && !Entities.IsStunned(ent) && !(WithCheck && ent === To) && Entities.IsControllableByPlayer(ent, playerID) && !Entities.IsIllusion(ent)
-	}).forEach(function(ent) {
+	})
+}
+
+function PoofAllMeeposToMeepo(playerID, To, WithCheck, Queue) {
+	GetMeepos().forEach(function(ent) {
 		var Abil = Game.GetAbilityByName(ent, 'meepo_poof')
 		GameUI.SelectUnit(ent, false)
 		Game.EntStop(ent, false)
@@ -13,12 +17,8 @@ function PoofAllMeeposToMeepo(playerID, To, WithCheck, Queue) {
 	})
 }
 
-function PoofAllMeeposToPos(playerID, To, Queue) {
-	var HEnts = Entities.GetAllEntitiesByClassname(MeepoName).map(function(ent) {
-		return parseInt(ent)
-	}).filter(function(ent) {
-		return Entities.IsAlive(ent) && !Entities.IsBuilding(ent) && !Entities.IsEnemy(ent) && !Entities.IsStunned(ent) && !(WithCheck && ent === To) && Entities.IsControllableByPlayer(ent, playerID) && !Entities.IsIllusion(ent)
-	}).forEach(function(ent) {
+function PoofAllMeeposToPos(playerID, To, WithCheck, Queue) {
+	GetMeepos().forEach(function(ent) {
 		var Abil = Game.GetAbilityByName(ent, 'meepo_poof')
 		GameUI.SelectUnit(ent, false)
 		Game.CastPosition(ent, Abil, To, Queue)
@@ -26,9 +26,7 @@ function PoofAllMeeposToPos(playerID, To, Queue) {
 }
 
 function MeepoAutoPoof(flag, WithCheck) {
-	var playerID = Game.GetLocalPlayerID()
-	
-	if (Players.GetPlayerSelectedHero(playerID) != MeepoName){
+	if (Players.GetPlayerSelectedHero(playerID) != Fusion.MeepoClassname){
 		Game.ScriptLogMsg('MeepoAutoPoof: Not Meepo', '#cccccc')
 		return
 	}
@@ -50,7 +48,7 @@ function MeepoAutoPoof(flag, WithCheck) {
 	if(flag === 2)
 		PoofAllMeeposToMeepo(playerID, MyEnt, WithCheck)
 	if(flag === 3)
-		PoofAllMeeposToPos(playerID, GameUI.GetCursorPosition())
+		PoofAllMeeposToPos(playerID, GameUI.GetCursorPosition(), WithCheck)
 	GameUI.SelectUnit(MyEnt, false)
 }
 
@@ -60,10 +58,12 @@ function MeepoCombo() {
 	var Veil = Game.GetAbilityByName(MyEnt, "item_veil_of_discord")
 	var pos = Game.GetScreenCursonWorldVec()
 	
+	/*
 	if(!MeepoEarthBind(pos)) {
 		Game.ScriptLogMsg('MeepoCombo: All earthbinds are at cooldown/stunned, cannot make combo!', '#cccccc')
 		return
 	}
+	*/
 	
 	var Blink = Game.GetAbilityByName(MyEnt, "item_blink")
 	/*
@@ -105,36 +105,28 @@ function MeepoEarthBind(pos) {
 	})
 }
 
-function BindCommands() {
-	Game.AddCommand('__MeepoAutoPoof_ToSelected', function() {
-		MeepoAutoPoof(0, true)
-	}, '', 0)
-	Game.AddCommand('__MeepoAutoPoof_ToCursor', function() {
-		MeepoAutoPoof(1, true)
-	}, '', 0)
-	Game.AddCommand('__MeepoAutoPoof_ToMain', function() {
-		MeepoAutoPoof(2, true)
-	}, '', 0)
-	
-	Game.AddCommand('__MeepoAutoPoof_ToSelected_All', function() {
-		MeepoAutoPoof(0, false)
-	}, '', 0)
-	Game.AddCommand('__MeepoAutoPoof_ToCursor_All', function() {
-		MeepoAutoPoof(1, false)
-	}, '', 0)
-	Game.AddCommand('__MeepoAutoPoof_ToMain_All', function() {
-		MeepoAutoPoof(2, false)
-	}, '', 0)
-	
-	Game.AddCommand('__MeepoEarthBind', function() {
-		MeepoEarthBind(Game.GetScreenCursonWorldVec())
-	}, '', 0)
-	
-	Game.AddCommand('__MeepoCombo', MeepoCombo, '', 0)
-}
+Game.AddCommand('__MeepoAutoPoof_ToSelected', function() {
+	MeepoAutoPoof(0, true)
+}, '', 0)
+Game.AddCommand('__MeepoAutoPoof_ToCursor', function() {
+	MeepoAutoPoof(1, true)
+}, '', 0)
+Game.AddCommand('__MeepoAutoPoof_ToMain', function() {
+	MeepoAutoPoof(2, true)
+}, '', 0)
 
-//function MapLoaded(data) {
-	BindCommands()
-//}
+Game.AddCommand('__MeepoAutoPoof_ToSelected_All', function() {
+	MeepoAutoPoof(0, false)
+}, '', 0)
+Game.AddCommand('__MeepoAutoPoof_ToCursor_All', function() {
+	MeepoAutoPoof(1, false)
+}, '', 0)
+Game.AddCommand('__MeepoAutoPoof_ToMain_All', function() {
+	MeepoAutoPoof(2, false)
+}, '', 0)
 
-//GameEvents.Subscribe('game_newmap', MapLoaded)
+Game.AddCommand('__MeepoEarthBind', function() {
+	MeepoEarthBind(Game.GetScreenCursonWorldVec())
+}, '', 0)
+
+Game.AddCommand('__MeepoCombo', MeepoCombo, '', 0)

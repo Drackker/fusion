@@ -22,12 +22,12 @@ function AutoUltNecrophosF() {
 	}).filter(function(ent) {
 		return Entities.IsAlive(ent) && !(Entities.IsBuilding(ent) || Entities.IsInvulnerable(ent)) && Entities.IsEnemy(ent) && Entities.GetRangeToUnit(MyEnt, ent) <= UltiRange && !Entities.IsMagicImmune(ent)
 	}).sort(function(ent1, ent2) {
-		var rng1 = Entities.GetHealth(ent1)
-		var rng2 = Entities.GetHealth(ent2)
+		var h1 = Entities.GetHealth(ent1)
+		var h2 = Entities.GetHealth(ent2)
 		
-		if(rng1 === rng2)
+		if(h1 === h2)
 			return 0
-		if(rng1 > rng2)
+		if(h1 > h2)
 			return 1
 		else
 			return -1
@@ -38,7 +38,7 @@ function AutoUltNecrophosF() {
 		if(Fusion.HasLinkenAtTime(ent, Abilities.GetCastPoint(Ulti)))
 			return false
 		var dmg = (Entities.GetMaxHealth(ent) - Entities.GetHealth(ent)) * DamagePerMissHP
-		var NeededDmg = Game.GetNeededMagicDmg(MyEnt, ent, Entities.GetHealth(ent))
+		var NeededDmg = Fusion.GetNeededMagicDmg(MyEnt, ent, Entities.GetHealth(ent))
 		
 		if(NeededDmg <= dmg) {
 			GameUI.SelectUnit(MyEnt,false)
